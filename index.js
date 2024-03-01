@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const multer = require("multer");
 const session = require("express-session");
+const MySQLStore = require("connect-mysql-session")(session);
 // const bcrypt = require("bcrypt");
 
 const app = express();
@@ -28,6 +29,14 @@ db.connect((err) => {
   }
 });
 
+const sessionStore = new MySQLStore(
+  {
+    expiration: 86400000, // Session expiration time in milliseconds (optional)
+    endConnectionOnClose: true, // Automatically end MySQL connections when the store is closed (optional)
+  },
+  db
+);
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -40,6 +49,7 @@ app.use(
     secret: "your_secret_key",
     resave: true,
     saveUninitialized: true,
+    store: sessionStore,
   })
 );
 
