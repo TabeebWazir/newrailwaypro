@@ -12,7 +12,7 @@ const port = process.env.PORT;
 
 // const urlDB = `mysql://root:h6BfgD4DF5F54Fahce1-dHeHGhf-BfFH@monorail.proxy.rlwy.net:16257/railway`;
 
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
   database: process.env.MYSQLDATABASE,
   host: process.env.MYSQLHOST,
   password: process.env.MYSQLPASSWORD,
@@ -20,7 +20,7 @@ const connection = mysql.createConnection({
   user: process.env.MYSQLUSER,
 });
 
-connection.connect((err) => {
+db.connect((err) => {
   if (err) {
     console.log("Error happened " + err);
   } else {
