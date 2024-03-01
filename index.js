@@ -7,11 +7,14 @@ const mysql = require("mysql2");
 const app = express();
 const port = process.env.PORT;
 
+// const urlDB = `mysql://root:h6BfgD4DF5F54Fahce1-dHeHGhf-BfFH@monorail.proxy.rlwy.net:16257/railway`;
+
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  database: process.env.MYSQLDATABASE,
+  host: process.env.MYSQLHOST,
+  password: process.env.MYSQLPASSWORD,
+  port: process.env.MYSQLPORT,
+  user: process.env.MYSQLUSER,
 });
 
 connection.connect((err) => {
