@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const multer = require("multer");
 const session = require("express-session");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 
 const app = express();
 const port = process.env.PORT;
@@ -334,6 +334,178 @@ app.get("/login", (req, res) => {
   res.render("login", { error: null });
 });
 
+// app.post("/register", (req, res) => {
+//   const name = req.body.name;
+//   const email = req.body.email;
+//   const password = req.body.password;
+//   const confirmPassword = req.body.confirmPassword;
+
+//   if (!name || !email || !password || !confirmPassword) {
+//     return res.render("register", { error: "Please fill in all fields" });
+//   }
+
+//   if (password !== confirmPassword) {
+//     return res.render("register", {
+//       error: "Password and Confirm Password do not match",
+//     });
+//   }
+
+//   db.query(
+//     "SELECT * FROM register WHERE email = ?",
+//     email,
+//     function (err, result) {
+//       if (err) {
+//         console.log("ERROR:", err);
+//         res.render("register", {
+//           error: "An error occurred during registration",
+//         });
+//       } else {
+//         if (result.length === 0) {
+//           bcrypt.hash(password, 10, function (err, hash) {
+//             if (err) {
+//               console.log("ERROR:", err);
+//               res.render("register", {
+//                 error: "An error occurred during registration",
+//               });
+//             } else {
+//               db.query(
+//                 "INSERT INTO register (name, email, password) VALUES (?, ?, ?)",
+//                 [name, email, hash],
+//                 function (err, result) {
+//                   if (err) {
+//                     console.log("ERROR:", err);
+//                     res.render("register", {
+//                       error: "An error occurred during registration",
+//                     });
+//                   } else {
+//                     console.log("Inserted " + result.affectedRows + " row");
+//                     res.redirect("/login");
+//                   }
+//                 }
+//               );
+//             }
+//           });
+//         } else {
+//           res.render("register", {
+//             error: "User with the same email already exists",
+//           });
+//         }
+//       }
+//     }
+//   );
+// });
+
+// app.post("/login", (req, res) => {
+//   const email = req.body.email;
+//   const password = req.body.password;
+
+//   if (!email || !password) {
+//     return res.render("login", { error: "Please fill in all fields" });
+//   }
+
+//   db.query(
+//     "SELECT * FROM register WHERE email = ?",
+//     email,
+//     function (err, result) {
+//       if (err) {
+//         console.log("ERROR:", err);
+//         res.render("login", { error: "An error occurred during login" });
+//       } else {
+//         if (result.length > 0) {
+//           const hash = result[0].password;
+//           bcrypt.compare(password, hash, function (err, isValid) {
+//             if (isValid) {
+//               req.session.userId = result[0].id;
+//               req.session.userEmail = email;
+//               res.redirect("/profile");
+//             } else {
+//               res.render("login", { error: "Invalid login credentials" });
+//             }
+//           });
+//         } else {
+//           res.render("login", { error: "User not found" });
+//         }
+//       }
+//     }
+//   );
+// });
+
+app.get("/register", (req, res) => {
+  res.render("register", { error: null });
+});
+
+app.get("/changepassword", (req, res) => {
+  res.render("changepassword", { error: null });
+});
+
+// app.post("/change-password", (req, res) => {
+//   const email = req.session.userEmail;
+//   const currentPassword = req.body.currentPassword;
+//   const newPassword = req.body.newPassword;
+//   const confirmNewPassword = req.body.confirmNewPassword;
+
+//   if (!currentPassword || !newPassword || !confirmNewPassword) {
+//     return res.render("changepassword", { error: "Please fill in all fields" });
+//   }
+
+//   if (newPassword !== confirmNewPassword) {
+//     return res.render("changepassword", {
+//       error: "New Password and Confirm New Password do not match",
+//     });
+//   }
+
+//   db.query(
+//     "SELECT * FROM register WHERE email = ?",
+//     email,
+//     function (err, result) {
+//       if (err) {
+//         console.log("ERROR:", err);
+//         res.render("changepassword", {
+//           error: "An error occurred during password change",
+//         });
+//       } else {
+//         if (result.length > 0) {
+//           const hash = result[0].password;
+//           bcrypt.compare(currentPassword, hash, function (err, isValid) {
+//             if (isValid) {
+//               bcrypt.hash(newPassword, 10, function (err, newHash) {
+//                 if (err) {
+//                   console.log("ERROR:", err);
+//                   res.render("changepassword", {
+//                     error: "An error occurred during password change",
+//                   });
+//                 } else {
+//                   db.query(
+//                     "UPDATE register SET password = ? WHERE email = ?",
+//                     [newHash, email],
+//                     function (err, updateResult) {
+//                       if (err) {
+//                         console.log("ERROR:", err);
+//                         res.render("changepassword", {
+//                           error: "An error occurred during password change",
+//                         });
+//                       } else {
+//                         console.log("Password changed successfully.");
+//                         res.redirect("/login");
+//                       }
+//                     }
+//                   );
+//                 }
+//               });
+//             } else {
+//               res.render("changepassword", {
+//                 error: "Invalid current password",
+//               });
+//             }
+//           });
+//         } else {
+//           res.render("changepassword", { error: "User not found" });
+//         }
+//       }
+//     }
+//   );
+// });
+
 app.post("/register", (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -350,49 +522,17 @@ app.post("/register", (req, res) => {
     });
   }
 
-  db.query(
-    "SELECT * FROM register WHERE email = ?",
-    email,
-    function (err, result) {
-      if (err) {
-        console.log("ERROR:", err);
-        res.render("register", {
-          error: "An error occurred during registration",
-        });
-      } else {
-        if (result.length === 0) {
-          bcrypt.hash(password, 10, function (err, hash) {
-            if (err) {
-              console.log("ERROR:", err);
-              res.render("register", {
-                error: "An error occurred during registration",
-              });
-            } else {
-              db.query(
-                "INSERT INTO register (name, email, password) VALUES (?, ?, ?)",
-                [name, email, hash],
-                function (err, result) {
-                  if (err) {
-                    console.log("ERROR:", err);
-                    res.render("register", {
-                      error: "An error occurred during registration",
-                    });
-                  } else {
-                    console.log("Inserted " + result.affectedRows + " row");
-                    res.redirect("/login");
-                  }
-                }
-              );
-            }
-          });
-        } else {
-          res.render("register", {
-            error: "User with the same email already exists",
-          });
-        }
-      }
+  // Perform the registration without bcrypt
+  const insertSql =
+    "INSERT INTO register (name, email, password) VALUES (?, ?, ?)";
+  db.query(insertSql, [name, email, password], (err, result) => {
+    if (err) {
+      console.error("Error inserting data into MySQL:", err);
+      return res.status(500).send("Internal Server Error");
     }
-  );
+    console.log("Inserted " + result.affectedRows + " row");
+    res.redirect("/login");
+  });
 });
 
 app.post("/login", (req, res) => {
@@ -403,39 +543,21 @@ app.post("/login", (req, res) => {
     return res.render("login", { error: "Please fill in all fields" });
   }
 
-  db.query(
-    "SELECT * FROM register WHERE email = ?",
-    email,
-    function (err, result) {
-      if (err) {
-        console.log("ERROR:", err);
-        res.render("login", { error: "An error occurred during login" });
-      } else {
-        if (result.length > 0) {
-          const hash = result[0].password;
-          bcrypt.compare(password, hash, function (err, isValid) {
-            if (isValid) {
-              req.session.userId = result[0].id;
-              req.session.userEmail = email;
-              res.redirect("/profile");
-            } else {
-              res.render("login", { error: "Invalid login credentials" });
-            }
-          });
-        } else {
-          res.render("login", { error: "User not found" });
-        }
-      }
+  // Perform login without bcrypt
+  const sql = "SELECT * FROM register WHERE email = ? AND password = ?";
+  db.query(sql, [email, password], (err, result) => {
+    if (err) {
+      console.error("Error querying the database:", err);
+      return res.status(500).send("Internal Server Error");
     }
-  );
-});
-
-app.get("/register", (req, res) => {
-  res.render("register", { error: null });
-});
-
-app.get("/changepassword", (req, res) => {
-  res.render("changepassword", { error: null });
+    if (result.length > 0) {
+      req.session.userId = result[0].id;
+      req.session.userEmail = email;
+      res.redirect("/profile");
+    } else {
+      res.render("login", { error: "Invalid login credentials" });
+    }
+  });
 });
 
 app.post("/change-password", (req, res) => {
@@ -454,56 +576,16 @@ app.post("/change-password", (req, res) => {
     });
   }
 
-  db.query(
-    "SELECT * FROM register WHERE email = ?",
-    email,
-    function (err, result) {
-      if (err) {
-        console.log("ERROR:", err);
-        res.render("changepassword", {
-          error: "An error occurred during password change",
-        });
-      } else {
-        if (result.length > 0) {
-          const hash = result[0].password;
-          bcrypt.compare(currentPassword, hash, function (err, isValid) {
-            if (isValid) {
-              bcrypt.hash(newPassword, 10, function (err, newHash) {
-                if (err) {
-                  console.log("ERROR:", err);
-                  res.render("changepassword", {
-                    error: "An error occurred during password change",
-                  });
-                } else {
-                  db.query(
-                    "UPDATE register SET password = ? WHERE email = ?",
-                    [newHash, email],
-                    function (err, updateResult) {
-                      if (err) {
-                        console.log("ERROR:", err);
-                        res.render("changepassword", {
-                          error: "An error occurred during password change",
-                        });
-                      } else {
-                        console.log("Password changed successfully.");
-                        res.redirect("/login");
-                      }
-                    }
-                  );
-                }
-              });
-            } else {
-              res.render("changepassword", {
-                error: "Invalid current password",
-              });
-            }
-          });
-        } else {
-          res.render("changepassword", { error: "User not found" });
-        }
-      }
+  // Update password without bcrypt
+  const updateSql = "UPDATE register SET password = ? WHERE email = ?";
+  db.query(updateSql, [newPassword, email], (err, updateResult) => {
+    if (err) {
+      console.error("Error updating password in database:", err);
+      return res.status(500).send("Internal Server Error");
     }
-  );
+    console.log("Password changed successfully.");
+    res.redirect("/login");
+  });
 });
 
 app.get("/profile", (req, res) => {
